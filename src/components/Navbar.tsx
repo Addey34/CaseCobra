@@ -38,16 +38,7 @@ const Navbar = async () => {
                     })}>
                     Dashboard ✨
                   </Link>
-                ) : null
-              //   <Link
-              //   href='/profil'
-              //   className={buttonVariants({
-              //     size: 'sm',
-              //     variant: 'ghost',
-              //   })}>
-              //   Profil 🎅
-              // </Link>
-              }
+                ) : null }
                 <Link
                   href='/configure/upload'
                   className={buttonVariants({
