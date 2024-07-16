@@ -10,8 +10,8 @@ import Stripe from 'stripe'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 function validateCountry(country: string | null | undefined): Country {
-  if (!country) return 'USA' // Valeur par défaut
-  const validCountries: Country[] = ['USA', 'CANADA', 'FRANCE'] // Assurez-vous que cela correspond à votre enum Country
+  if (!country) return 'USA' 
+  const validCountries: Country[] = ['USA', 'CANADA', 'FRANCE'] 
   return validCountries.includes(country as Country) ? (country as Country) : 'USA'
 }
 
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     
       const shippingAddressData = createAddressData(session.shipping_details!)
       const billingAddressData = createAddressData(session.customer_details!)
-    
+      
       const shippingAddress = await db.shippingAddress.create({ data: shippingAddressData })
       const billingAddress = await db.billingAddress.create({ data: billingAddressData })
     
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       })
 
       await resend.emails.send({
-        from: 'CaseCobra <hello@joshtriedcoding.com>',
+        from: 'CaseCobra <me@adrianguichard.com>',
         to: [session.customer_details.email],
         subject: 'Thanks for your order!',
         react: OrderReceivedEmail({
