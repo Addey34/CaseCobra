@@ -1,9 +1,9 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { CaseColor } from '@prisma/client'
 import { useEffect, useRef, useState } from 'react'
 import { AspectRatio } from './ui/aspect-ratio'
-import { cn } from '@/lib/utils'
 
 const PhonePreview = ({
   croppedImageUrl,
@@ -31,7 +31,7 @@ const PhonePreview = ({
     window.addEventListener('resize', handleResize)
 
     return () => window.removeEventListener('resize', handleResize)
-  }, [ref.current])
+  }, [])
 
   let caseBackgroundColor = 'bg-zinc-950'
   if (color === 'blue') caseBackgroundColor = 'bg-blue-950'
@@ -54,6 +54,7 @@ const PhonePreview = ({
             caseBackgroundColor
           )}
           src={croppedImageUrl}
+          alt=""
         />
       </div>
 
