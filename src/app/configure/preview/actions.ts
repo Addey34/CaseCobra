@@ -4,7 +4,7 @@ import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
 import { db } from '@/db'
 import { stripe } from '@/lib/stripe'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { Order } from '@prisma/client'
+import { CaseFinish, CaseMaterial, Country, Order, Prisma } from '@prisma/client'
 
 export const createCheckoutSession = async ({
   configId,
@@ -20,18 +20,36 @@ export const createCheckoutSession = async ({
   }
 
   const { getUser } = getKindeServerSession()
-  const user = await getUser()
+  const kindeUser = await getUser()
 
-  if (!user) {
+  if (!kindeUser || !kindeUser.id || !kindeUser.email) {
     throw new Error('You need to be logged in')
+  }
+
+  // Vérifier si l'utilisateur existe déjà dans la base de données
+  let user = await db.user.findUnique({
+    where: { email: kindeUser.email },
+  })
+
+  // Si l'utilisateur n'existe pas, le créer
+  if (!user) {
+    user = await db.user.create({
+      data: {
+        email: kindeUser.email,
+        // Ajoutez d'autres champs si nécessaire
+      },
+    })
   }
 
   const { finish, material } = configuration
 
   let price = BASE_PRICE
-  if (finish === 'textured') price += PRODUCT_PRICES.finish.textured
-  if (material === 'polycarbonate')
+  if (finish === CaseFinish.TEXTURED) {
+    price += PRODUCT_PRICES.finish.textured
+  }
+  if (material === CaseMaterial.POLYCARBONATE) {
     price += PRODUCT_PRICES.material.polycarbonate
+  }
 
   let order: Order | undefined = undefined
 
@@ -47,11 +65,30 @@ export const createCheckoutSession = async ({
   if (existingOrder) {
     order = existingOrder
   } else {
+    // Créer des adresses temporaires
+    const tempAddress: Prisma.BillingAddressCreateInput = {
+      name: "To be updated",
+      street: "To be updated",
+      city: "To be updated",
+      postalCode: "00000",
+      country: Country.USA,
+    }
+
     order = await db.order.create({
       data: {
         amount: price / 100,
-        userId: user.id,
-        configurationId: configuration.id,
+        user: {
+          connect: { id: user.id }
+        },
+        configuration: {
+          connect: { id: configuration.id }
+        },
+        billingAddress: {
+          create: tempAddress
+        },
+        shippingAddress: {
+          create: tempAddress
+        }
       },
     })
   }
@@ -70,7 +107,7 @@ export const createCheckoutSession = async ({
     cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configure/preview?id=${configuration.id}`,
     payment_method_types: ['card', 'paypal'],
     mode: 'payment',
-    shipping_address_collection: { allowed_countries: ['DE', 'US'] },
+    shipping_address_collection: { allowed_countries: ['FR', 'DE', 'GB', 'IT', 'ES', 'US', 'CA'] },
     metadata: {
       userId: user.id,
       orderId: order.id,

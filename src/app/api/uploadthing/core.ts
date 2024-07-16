@@ -5,7 +5,6 @@ import { z } from 'zod';
 
 const f = createUploadthing();
 
-// Constants for image dimensions
 const MAX_WIDTH = 2000;
 const MAX_HEIGHT = 2000;
 const MIN_WIDTH = 100;
@@ -15,7 +14,6 @@ export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: '4MB' } })
     .input(z.object({ configId: z.string().optional() }))
     .middleware(async ({ input }) => {
-      // You can add any pre-processing logic here if needed
       return { input };
     })
     .onUploadComplete(async ({ metadata, file }) => {
@@ -50,7 +48,9 @@ export const ourFileRouter = {
           .webp({ quality: 80 })
           .toBuffer();
 
-        // Here, you would typically upload the optimizedImage to your storage
+        // TODO: Implement uploadToStorage function
+        // const imageUrl = await uploadToStorage(optimizedImage);
+        
         // For now, we'll continue using the original URL
         const imageUrl = file.url;
 
