@@ -35,8 +35,8 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const { label: modelLabel } = MODELS.options.find(m => m.value === model) || {}
 
   let totalPrice = BASE_PRICE
-  if (material === 'polycarbonate') totalPrice += PRODUCT_PRICES.material.polycarbonate
-  if (finish === 'textured') totalPrice += PRODUCT_PRICES.finish.textured
+  if (material === 'POLYCARBONATE') totalPrice += PRODUCT_PRICES.material.polycarbonate
+  if (finish === 'TEXTURED') totalPrice += PRODUCT_PRICES.finish.textured
 
   const { mutate: createPaymentSession } = useMutation({
     mutationKey: ['get-checkout-session'],
@@ -119,7 +119,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                   </p>
                 </div>
 
-                {finish === 'textured' && (
+                {finish === 'TEXTURED' && (
                   <div className='flex items-center justify-between py-1 mt-2'>
                     <p className='text-gray-600'>Textured finish</p>
                     <p className='font-medium text-gray-900'>
@@ -128,7 +128,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                   </div>
                 )}
 
-                {material === 'polycarbonate' && (
+                {material === 'POLYCARBONATE' && (
                   <div className='flex items-center justify-between py-1 mt-2'>
                     <p className='text-gray-600'>Soft polycarbonate material</p>
                     <p className='font-medium text-gray-900'>
