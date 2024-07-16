@@ -18,6 +18,7 @@ function validateCountry(country: string | null | undefined): Country {
 function createAddressData(details: Stripe.Checkout.Session.CustomerDetails | Stripe.Checkout.Session.ShippingDetails) {
   const address = details.address
   return {
+    id: '',
     name: details.name || 'Unknown',
     street: address?.line1 || 'Unknown',
     city: address?.city || 'Unknown',
@@ -45,23 +46,23 @@ export async function POST(req: Request) {
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session
-
+    
       if (!session.customer_details?.email) {
         throw new Error('Missing user email')
       }
-
+    
       const { userId, orderId } = session.metadata || {}
-
+    
       if (!userId || !orderId) {
         throw new Error('Invalid request metadata')
       }
-
+    
       const shippingAddressData = createAddressData(session.shipping_details!)
       const billingAddressData = createAddressData(session.customer_details!)
-
+    
       const shippingAddress = await db.shippingAddress.create({ data: shippingAddressData })
       const billingAddress = await db.billingAddress.create({ data: billingAddressData })
-
+    
       const updatedOrder = await db.order.update({
         where: { id: orderId },
         data: {
