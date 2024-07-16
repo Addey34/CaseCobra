@@ -2,7 +2,10 @@
 
 Built with the Next.js 14 App Router, Postgres, TypeScript, Tailwind & Kinde Auth
 
-![Project Image](https://github.com/joschan21/casecobra/blob/master/public/thumbnail.png)
+![View1](public/View1.png)
+![View2](public/View2.png)
+![View3](public/View3.png)
+![View4](public/View4.png)
 
 ## Features
 
