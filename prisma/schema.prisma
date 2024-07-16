@@ -8,40 +8,40 @@ datasource db {
 }
 
 enum OrderStatus {
-  fulfilled
-  shipped
-  awaiting_shipment
+  AWAITING_SHIPMENT
+  SHIPPED
+  FULFILLED
 }
 
 enum PhoneModel {
-  iphonex
-  iphone11
-  iphone12
-  iphone13
-  iphone14
-  iphone15
+  IPHONE_X
+  IPHONE_11
+  IPHONE_12
+  IPHONE_13
+  IPHONE_14
+  IPHONE_15
 }
 
 enum CaseMaterial {
-  silicone
-  polycarbonate
+  SILICONE
+  POLYCARBONATE
 }
 
 enum CaseFinish {
-  smooth
-  textured
+  SMOOTH
+  TEXTURED
 }
 
 enum CaseColor {
-  black
-  blue
-  rose
+  BLACK
+  BLUE
+  ROSE
 }
 
 enum Country {
   USA
-  Canada
-  France
+  CANADA
+  FRANCE
   // Ajoutez d'autres pays selon vos besoins
 }
 
@@ -56,16 +56,14 @@ model Configuration {
   finish          CaseFinish?
   croppedImageUrl String?
   orders          Order[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 model User {
-  id    String  @id @default(cuid())
-  email String  @unique
-  orders Order[]
-
+  id        String   @id @default(cuid())
+  email     String   @unique
+  orders    Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -73,29 +71,27 @@ model User {
 }
 
 model Order {
-  id              String        @id @default(cuid())
-  configurationId String
-  configuration   Configuration @relation(fields: [configurationId], references: [id])
-  user            User          @relation(fields: [userId], references: [id])
-  userId          String
-  amount          Float
-  isPaid          Boolean       @default(false)
-  paidAt          DateTime?
-  status          OrderStatus   @default(awaiting_shipment)
-
+  id                String          @id @default(cuid())
+  configurationId   String
+  configuration     Configuration   @relation(fields: [configurationId], references: [id])
+  user              User            @relation(fields: [userId], references: [id])
+  userId            String
+  amount            Float
+  isPaid            Boolean         @default(false)
+  paidAt            DateTime?
+  status            OrderStatus     @default(AWAITING_SHIPMENT)
   shippingAddress   ShippingAddress @relation(fields: [shippingAddressId], references: [id])
   shippingAddressId String          @unique
   billingAddress    BillingAddress  @relation(fields: [billingAddressId], references: [id])
   billingAddressId  String          @unique
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 
   @@index([userId, status])
 }
 
 model ShippingAddress {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   street      String
   city        String
@@ -107,7 +103,7 @@ model ShippingAddress {
 }
 
 model BillingAddress {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   street      String
   city        String
