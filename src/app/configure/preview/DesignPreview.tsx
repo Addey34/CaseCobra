@@ -1,42 +1,41 @@
 'use client'
 
-import Phone from '@/components/Phone'
-import { Button } from '@/components/ui/button'
-import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
-import { cn, formatPrice } from '@/lib/utils'
-import { COLORS, FINISHES, MODELS } from '@/validators/option-validator'
-import { Configuration } from '@prisma/client'
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
 import { useMutation } from '@tanstack/react-query'
 import { ArrowRight, Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Confetti from 'react-dom-confetti'
-import { createCheckoutSession } from './actions'
-import { useRouter } from 'next/navigation'
-import { useToast } from '@/components/ui/use-toast'
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
+
 import LoginModal from '@/components/LoginModal'
+import Phone from '@/components/Phone'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
+import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
+import { cn, formatPrice } from '@/lib/utils'
+import { COLORS, MODELS } from '@/validators/option-validator'
+import { Configuration } from '@prisma/client'
+import { createCheckoutSession } from './actions'
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter()
   const { toast } = useToast()
-  const { id } = configuration
   const { user } = useKindeBrowserClient()
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false)
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
 
-  const [showConfetti, setShowConfetti] = useState<boolean>(false)
-  useEffect(() => setShowConfetti(true))
+  const { id, color, model, finish, material } = configuration
 
-  const { color, model, finish, material } = configuration
+  useEffect(() => {
+    setShowConfetti(true)
+    return () => setShowConfetti(false)
+  }, [])
 
-  const tw = COLORS.find((supportedColor) => supportedColor.value === color)?.tw
-
-  const { label: modelLabel } = MODELS.options.find(
-    ({ value }) => value === model
-  )!
+  const tw = COLORS.find(c => c.value === color)?.tw
+  const { label: modelLabel } = MODELS.options.find(m => m.value === model) || {}
 
   let totalPrice = BASE_PRICE
-  if (material === 'polycarbonate')
-    totalPrice += PRODUCT_PRICES.material.polycarbonate
+  if (material === 'polycarbonate') totalPrice += PRODUCT_PRICES.material.polycarbonate
   if (finish === 'textured') totalPrice += PRODUCT_PRICES.finish.textured
 
   const { mutate: createPaymentSession } = useMutation({
@@ -57,10 +56,8 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
   const handleCheckout = () => {
     if (user) {
-      // create payment session
       createPaymentSession({ configId: id })
     } else {
-      // need to log in
       localStorage.setItem('configurationId', id)
       setIsLoginModalOpen(true)
     }
@@ -68,13 +65,8 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
   return (
     <>
-      <div
-        aria-hidden='true'
-        className='pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center'>
-        <Confetti
-          active={showConfetti}
-          config={{ elementCount: 200, spread: 90 }}
-        />
+      <div aria-hidden='true' className='pointer-events-none select-none absolute inset-0 overflow-hidden flex justify-center'>
+        <Confetti active={showConfetti} config={{ elementCount: 200, spread: 90 }} />
       </div>
 
       <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
@@ -127,23 +119,23 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
                   </p>
                 </div>
 
-                {finish === 'textured' ? (
+                {finish === 'textured' && (
                   <div className='flex items-center justify-between py-1 mt-2'>
                     <p className='text-gray-600'>Textured finish</p>
                     <p className='font-medium text-gray-900'>
                       {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
                     </p>
                   </div>
-                ) : null}
+                )}
 
-                {material === 'polycarbonate' ? (
+                {material === 'polycarbonate' && (
                   <div className='flex items-center justify-between py-1 mt-2'>
                     <p className='text-gray-600'>Soft polycarbonate material</p>
                     <p className='font-medium text-gray-900'>
                       {formatPrice(PRODUCT_PRICES.material.polycarbonate / 100)}
                     </p>
                   </div>
-                ) : null}
+                )}
 
                 <div className='my-2 h-px bg-gray-200' />
 
@@ -158,7 +150,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
             <div className='mt-8 flex justify-end pb-12'>
               <Button
-                onClick={() => handleCheckout()}
+                onClick={handleCheckout}
                 className='px-4 sm:px-6 lg:px-8'>
                 Check out <ArrowRight className='h-4 w-4 ml-1.5 inline' />
               </Button>
