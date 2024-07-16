@@ -22,6 +22,7 @@ import {
   MODELS,
 } from '@/validators/option-validator'
 import { RadioGroup } from '@headlessui/react'
+import { CaseColor, CaseFinish, CaseMaterial, PhoneModel } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react'
 import NextImage from 'next/image'
@@ -387,10 +388,10 @@ const DesignConfigurator = ({
                 onClick={() =>
                   saveConfig({
                     configId,
-                    color: options.color.value,
-                    finish: options.finish.value,
-                    material: options.material.value,
-                    model: options.model.value,
+                    color: options.color.value.toUpperCase() as CaseColor,
+                    finish: options.finish.value.toUpperCase() as CaseFinish,
+                    material: options.material.value.toUpperCase() as CaseMaterial,
+                    model: options.model.value.toUpperCase() as PhoneModel,
                   })
                 }
                 size='sm'
