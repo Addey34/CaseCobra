@@ -102,9 +102,12 @@ enum CaseFinish {
 }
 
 enum CaseColor {
-  BLACK
+  BLACK 
+  black
   BLUE
+  blue
   ROSE
+  rose
 }
 
 enum Country {
