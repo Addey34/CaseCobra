@@ -60,6 +60,7 @@ const Steps = () => {
                       {
                         'border-none': isCompleted,
                         'border-zinc-700': isCurrent,
+                        
                       }
                     )}
                   />

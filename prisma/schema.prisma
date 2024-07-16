@@ -38,6 +38,13 @@ enum CaseColor {
   rose
 }
 
+enum Country {
+  USA
+  Canada
+  France
+  // Ajoutez d'autres pays selon vos besoins
+}
+
 model Configuration {
   id              String        @id @default(cuid())
   width           Int
@@ -48,16 +55,21 @@ model Configuration {
   material        CaseMaterial?
   finish          CaseFinish?
   croppedImageUrl String?
-  Order           Order[]
+  orders          Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
   id    String  @id @default(cuid())
-  email String
-  Order Order[]
+  email String  @unique
+  orders Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([email])
 }
 
 model Order {
@@ -68,37 +80,40 @@ model Order {
   userId          String
   amount          Float
   isPaid          Boolean       @default(false)
+  paidAt          DateTime?
   status          OrderStatus   @default(awaiting_shipment)
 
-  shippingAddress   ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
-  shippingAddressId String?
-  billingAddress    BillingAddress?  @relation(fields: [billingAddressId], references: [id])
-  billingAddressId  String?
+  shippingAddress   ShippingAddress @relation(fields: [shippingAddressId], references: [id])
+  shippingAddressId String          @unique
+  billingAddress    BillingAddress  @relation(fields: [billingAddressId], references: [id])
+  billingAddressId  String          @unique
 
   createdAt DateTime @default(now())
-  updated   DateTime @updatedAt
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
 }
 
 model ShippingAddress {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   street      String
   city        String
   postalCode  String
-  country     String
+  country     Country
   state       String?
   phoneNumber String?
-  orders      Order[]
+  order       Order?
 }
 
 model BillingAddress {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   street      String
   city        String
   postalCode  String
-  country     String
+  country     Country
   state       String?
   phoneNumber String?
-  orders      Order[]
+  order       Order?
 }
