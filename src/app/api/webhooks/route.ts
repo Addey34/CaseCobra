@@ -1,6 +1,7 @@
 import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
 import { db } from '@/db'
 import { stripe } from '@/lib/stripe'
+import { Country } from '@prisma/client'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
@@ -8,21 +9,22 @@ import Stripe from 'stripe'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-function validateCountry(country: string | null | undefined): string {
-  if (!country) return 'Unknown'
-  const validCountries = ['US', 'CA', 'UK', /* ajoutez d'autres pays valides ici */]
-  return validCountries.includes(country) ? country : 'Unknown'
+function validateCountry(country: string | null | undefined): Country {
+  if (!country) return 'USA' // Valeur par défaut
+  const validCountries: Country[] = ['USA', 'CANADA', 'FRANCE'] // Assurez-vous que cela correspond à votre enum Country
+  return validCountries.includes(country as Country) ? (country as Country) : 'USA'
 }
 
 function createAddressData(details: Stripe.Checkout.Session.CustomerDetails | Stripe.Checkout.Session.ShippingDetails) {
   const address = details.address
   return {
     name: details.name || 'Unknown',
-    city: address?.city || 'Unknown',
-    country: validateCountry(address?.country),
-    postalCode: address?.postal_code || 'Unknown',
     street: address?.line1 || 'Unknown',
-    state: address?.state || 'Unknown',
+    city: address?.city || 'Unknown',
+    postalCode: address?.postal_code || 'Unknown',
+    country: validateCountry(address?.country),
+    state: address?.state || null,
+    phoneNumber: details.phone || null,
   }
 }
 
@@ -57,13 +59,14 @@ export async function POST(req: Request) {
       const shippingAddressData = createAddressData(session.shipping_details!)
       const billingAddressData = createAddressData(session.customer_details!)
 
-      const shippingAddress = await db.address.create({ data: shippingAddressData })
-      const billingAddress = await db.address.create({ data: billingAddressData })
+      const shippingAddress = await db.shippingAddress.create({ data: shippingAddressData })
+      const billingAddress = await db.billingAddress.create({ data: billingAddressData })
 
       const updatedOrder = await db.order.update({
         where: { id: orderId },
         data: {
           isPaid: true,
+          paidAt: new Date(),
           shippingAddressId: shippingAddress.id,
           billingAddressId: billingAddress.id,
         },
