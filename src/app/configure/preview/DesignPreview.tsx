@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
 import { cn, formatPrice } from '@/lib/utils'
-import { COLORS, MODELS } from '@/validators/option-validator'
+import { MODELS } from '@/validators/option-validator'
 import { Configuration } from '@prisma/client'
 import { createCheckoutSession } from './actions'
 
@@ -33,7 +33,18 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
   type PhoneModelValue = "iphonex" | "iphone11" | "iphone12" | "iphone13" | "iphone14" | "iphone15";
 
-  const tw = COLORS.find(c => c.value === (color as 'black' | 'blue' | 'rose'))?.tw
+  type ColorOption = {
+    value: "black" | "blue" | "rose";
+    tw: string;
+  };
+  
+  const COLORS: ColorOption[] = [
+    { value: "black", tw: "black" },
+    { value: "blue", tw: "blue" },
+    { value: "rose", tw: "rose" },
+  ];
+
+  const tw = color ? COLORS.find(c => c.value === (color as "black" | "blue" | "rose"))?.tw : undefined;
   const { label: modelLabel } = MODELS.options.find(m => m.value === (model as PhoneModelValue)) ?? {};
 
   let totalPrice = BASE_PRICE
