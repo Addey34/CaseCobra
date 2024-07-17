@@ -22,14 +22,18 @@ type PhoneModel = (typeof MODELS.options)[number]['value']
 type Finish = 'SMOOTH' | 'TEXTURED' | null
 type Material = 'SILICONE' | 'POLYCARBONATE' | null
 
-interface ConfigurationWithTypes extends Omit<Configuration, 'color' | 'model' | 'finish' | 'material'> {
-  color: CaseColor
-  model: PhoneModel
-  finish: Finish
-  material: Material
+export interface ConfigurationWithTypes extends Omit<Configuration, 'color' | 'model' | 'finish' | 'material'> {
+  color: CaseColor;
+  model: PhoneModel;
+  finish: Finish;
+  material: Material;
 }
 
-const DesignPreview = ({ configuration }: { configuration: ConfigurationWithTypes }) => {
+interface DesignPreviewProps {
+  configuration: ConfigurationWithTypes;
+}
+
+const DesignPreview: React.FC<DesignPreviewProps> = ({ configuration }) => {
   const router = useRouter()
   const { toast } = useToast()
   const { user } = useKindeBrowserClient()
