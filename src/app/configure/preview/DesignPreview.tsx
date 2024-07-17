@@ -13,11 +13,23 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
 import { cn, formatPrice } from '@/lib/utils'
-import { MODELS } from '@/validators/option-validator'
+import { COLORS, MODELS } from '@/validators/option-validator'
 import { Configuration } from '@prisma/client'
 import { createCheckoutSession } from './actions'
 
-const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
+type CaseColor = (typeof COLORS)[number]['value']
+type PhoneModel = (typeof MODELS.options)[number]['value']
+type Finish = 'SMOOTH' | 'TEXTURED' | null
+type Material = 'SILICONE' | 'POLYCARBONATE' | null
+
+interface ConfigurationWithTypes extends Omit<Configuration, 'color' | 'model' | 'finish' | 'material'> {
+  color: CaseColor
+  model: PhoneModel
+  finish: Finish
+  material: Material
+}
+
+const DesignPreview = ({ configuration }: { configuration: ConfigurationWithTypes }) => {
   const router = useRouter()
   const { toast } = useToast()
   const { user } = useKindeBrowserClient()
@@ -31,21 +43,11 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     return () => setShowConfetti(false)
   }, [])
 
-  type PhoneModelValue = "iphonex" | "iphone11" | "iphone12" | "iphone13" | "iphone14" | "iphone15";
+  const colorOption = COLORS.find(c => c.value === color) || { tw: '' }
+  const tw = colorOption.tw
 
-  type ColorOption = {
-    value: "black" | "blue" | "rose";
-    tw: string;
-  };
-  
-  const COLORS: ColorOption[] = [
-    { value: "black", tw: "black" },
-    { value: "blue", tw: "blue" },
-    { value: "rose", tw: "rose" },
-  ];
-
-  const tw = color ? COLORS.find(c => c.value === (color as "black" | "blue" | "rose"))?.tw : undefined;
-  const { label: modelLabel } = MODELS.options.find(m => m.value === (model as PhoneModelValue)) ?? {};
+  const modelOption = MODELS.options.find(m => m.value === model) || { label: 'Unknown Model' }
+  const modelLabel = modelOption.label
 
   let totalPrice = BASE_PRICE
   if (material === 'POLYCARBONATE') totalPrice += PRODUCT_PRICES.material.polycarbonate
