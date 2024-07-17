@@ -11,13 +11,13 @@ import { cn } from '@/lib/utils'
 import { OrderStatus } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 import { Check, ChevronsUpDown } from 'lucide-react'
-import { changeOrderStatus } from './actions'
 import { useRouter } from 'next/navigation'
+import { changeOrderStatus } from './actions'
 
-const LABEL_MAP: Record<keyof typeof OrderStatus, string> = {
-  awaiting_shipment: 'Awaiting Shipment',
-  fulfilled: 'Fulfilled',
-  shipped: 'Shipped',
+const LABEL_MAP: Record<OrderStatus, string> = {
+  AWAITING_SHIPMENT: 'Awaiting Shipment',
+  FULFILLED: 'Fulfilled',
+  SHIPPED: 'Shipped',
 }
 
 const StatusDropdown = ({
