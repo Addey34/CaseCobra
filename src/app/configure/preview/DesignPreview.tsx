@@ -31,8 +31,10 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     return () => setShowConfetti(false)
   }, [])
 
-  const tw = COLORS.find(c => c.value === color)?.tw
-  const { label: modelLabel } = MODELS.options.find(m => m.value === model) || {}
+  type PhoneModelValue = "iphonex" | "iphone11" | "iphone12" | "iphone13" | "iphone14" | "iphone15";
+
+  const tw = COLORS.find(c => c.value === (color as 'black' | 'blue' | 'rose'))?.tw
+  const { label: modelLabel } = MODELS.options.find(m => m.value === (model as PhoneModelValue)) ?? {};
 
   let totalPrice = BASE_PRICE
   if (material === 'POLYCARBONATE') totalPrice += PRODUCT_PRICES.material.polycarbonate
