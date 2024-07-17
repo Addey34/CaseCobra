@@ -34,8 +34,8 @@ const PhonePreview = ({
   }, [])
 
   let caseBackgroundColor = 'bg-zinc-950'
-  if (color === 'blue') caseBackgroundColor = 'bg-blue-950'
-  if (color === 'rose') caseBackgroundColor = 'bg-rose-950'
+  if (color === 'BLUE') caseBackgroundColor = 'bg-blue-950'
+  if (color === 'ROSE') caseBackgroundColor = 'bg-rose-950'
 
   return (
     <AspectRatio ref={ref} ratio={3000 / 2001} className='relative'>

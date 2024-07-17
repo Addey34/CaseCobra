@@ -1,5 +1,3 @@
-// Page.tsx
-
 import { db } from '@/db';
 import { notFound } from 'next/navigation';
 import DesignPreview, { ConfigurationWithTypes } from './DesignPreview'; // Vérifiez l'importation ici
