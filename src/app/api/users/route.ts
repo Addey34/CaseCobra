@@ -5,21 +5,22 @@ import { NextResponse } from 'next/server';
 type KindeUser = {
   id: string;
   email: string;
-  given_name?: string;  // Prénom
-  family_name?: string; // Nom de famille
+  given_name?: string;
+  family_name?: string;
 };
 
 export async function GET() {
   try {
     const { getUser } = getKindeServerSession();
     const user = await getUser();
+    console.log(user)
 
     if (!user?.id) {
       return new NextResponse('Utilisateur non trouvé', { status: 404 });
     }
 
     const { id, email, given_name, family_name } = user;
-    const userName = `${given_name || ''} ${family_name || ''}`.trim(); // Combine prénom et nom de famille
+    const userName = `${given_name || ''} ${family_name || ''}`.trim();
 
     if (!email) {
       return new NextResponse('Email manquant', { status: 400 });
@@ -48,7 +49,7 @@ export async function GET() {
 
     return NextResponse.json({
       email: userData.email,
-      name: userName,  // Utilisez le nom complet
+      name: userName,
       createdAt: userData.createdAt,
     });
   } catch (error) {
