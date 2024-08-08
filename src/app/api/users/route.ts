@@ -2,18 +2,11 @@ import { db } from '@/db';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { NextResponse } from 'next/server';
 
-type KindeUser = {
-  id: string;
-  email: string;
-  given_name?: string;
-  family_name?: string;
-};
-
 export async function GET() {
   try {
     const { getUser } = getKindeServerSession();
     const user = await getUser();
-    console.log(user)
+    console.log('User from session:', user);
 
     if (!user?.id) {
       return new NextResponse('Utilisateur non trouvé', { status: 404 });
@@ -46,6 +39,8 @@ export async function GET() {
         },
       },
     });
+
+    console.log('User data from DB:', userData);
 
     return NextResponse.json({
       email: userData.email,
