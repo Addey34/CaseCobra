@@ -2,16 +2,14 @@ import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
 import { db } from '@/db'
 import { stripe } from '@/lib/stripe'
 import { Country } from '@prisma/client'
-import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import Stripe from 'stripe'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY!)
 
 function validateCountry(country: string | null | undefined): Country {
-  if (!country) return 'USA' 
-  const validCountries: Country[] = ['USA', 'CANADA', 'FRANCE'] 
+  const validCountries: Country[] = ['USA', 'CANADA', 'FRANCE']
   return validCountries.includes(country as Country) ? (country as Country) : 'USA'
 }
 
@@ -32,8 +30,8 @@ function createAddressData(details: Stripe.Checkout.Session.CustomerDetails | St
 export async function POST(req: Request) {
   try {
     const body = await req.text()
-    const signature = headers().get('stripe-signature')
-
+    const signature = req.headers.get('stripe-signature')
+    
     if (!signature) {
       return new NextResponse('Invalid signature', { status: 400 })
     }

@@ -23,14 +23,22 @@ model Configuration {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]
+  id         String      @id @default(cuid())
+  email      String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  orders     Order[]
+  googleUser GoogleUser? @relation
 
   @@index([email])
 }
+model GoogleUser {
+  id         String  @id @default(cuid())
+  googleId   String  @unique
+  googleName String
+  user       User    @relation(fields: [id], references: [id])
+}
+
 
 model Order {
   id                String          @id @default(cuid())
