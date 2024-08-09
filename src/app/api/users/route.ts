@@ -6,6 +6,7 @@ export async function GET() {
   try {
     const { getUser } = getKindeServerSession();
     const user = await getUser();
+    console.log(user)
 
     if (!user?.id) {
       return new NextResponse('Utilisateur non trouvé', { status: 404 });

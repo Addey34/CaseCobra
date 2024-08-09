@@ -37,7 +37,7 @@ const Navbar = async () => {
                   size: 'sm',
                   variant: 'ghost',
                 })}>
-                Profil
+                Profile
                 </Link>
                 <Link
                   href='/api/auth/logout'

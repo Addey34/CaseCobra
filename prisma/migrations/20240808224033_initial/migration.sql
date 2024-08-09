@@ -44,6 +44,15 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "GoogleUser" (
+    "id" TEXT NOT NULL,
+    "googleId" TEXT NOT NULL,
+    "googleName" TEXT NOT NULL,
+
+    CONSTRAINT "GoogleUser_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Order" (
     "id" TEXT NOT NULL,
     "configurationId" TEXT NOT NULL,
@@ -95,6 +104,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE INDEX "User_email_idx" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "GoogleUser_googleId_key" ON "GoogleUser"("googleId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Order_shippingAddressId_key" ON "Order"("shippingAddressId");
 
 -- CreateIndex
@@ -102,6 +114,9 @@ CREATE UNIQUE INDEX "Order_billingAddressId_key" ON "Order"("billingAddressId");
 
 -- CreateIndex
 CREATE INDEX "Order_userId_status_idx" ON "Order"("userId", "status");
+
+-- AddForeignKey
+ALTER TABLE "GoogleUser" ADD CONSTRAINT "GoogleUser_id_fkey" FOREIGN KEY ("id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_billingAddressId_fkey" FOREIGN KEY ("billingAddressId") REFERENCES "BillingAddress"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
